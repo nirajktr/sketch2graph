@@ -9,41 +9,63 @@ let current;
 let previous;
 
 function setup() {
-  createCanvas(720, 400);
+    // 720, 400 Default
+  createCanvas(800, 600);
   current = createVector(0,0);
   previous = createVector(0,0);
 };
+
+// Define an array to store points
+let points = [];
 
 function draw() {
   background(200);
   
   // If it's time for a new point
   if (millis() > next && painting) {
-
     // Grab mouse position      
-    current.x = mouseX;
-    current.y = mouseY;
+    let current = createVector(mouseX, mouseY);
 
-    // New particle's force is based on mouse movement
+    // New point's force is based on mouse movement
     let force = p5.Vector.sub(current, previous);
     force.mult(0.05);
 
-    // Add new particle
-    paths[paths.length - 1].add(current, force);
-    
-    // Schedule next circle
+    // Add new point to the array
+    points.push({ x: current.x, y: current.y });
+
+    // Schedule next point
     next = millis() + random(100);
 
-    // Store mouse values
+    // Store current mouse values
     previous.x = current.x;
     previous.y = current.y;
   }
 
-  // Draw all paths
-  for( let i = 0; i < paths.length; i++) {
-    paths[i].update();
-    paths[i].display();
+  // Draw all points
+  for(let i = 0; i < points.length - 1; i++) {
+    stroke(0);
+    strokeWeight(3);
+    line(points[i].x, points[i].y, points[i + 1].x, points[i + 1].y);
   }
+}
+
+function sendDataToPython(points) {
+    // Send points data to Flask backend using AJAX
+    fetch('/process_points', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ points: points }),
+    })
+    .then(response => response.json())
+    .then(data => {
+        console.log('Response from Flask backend:', data);
+        // Handle response from Flask if needed
+    })
+    .catch(error => {
+        console.error('Error sending data to Flask backend:', error);
+    });
 }
 
 // Start it up

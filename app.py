@@ -6,16 +6,18 @@ app = Flask(__name__)
 def index():
     return render_template('index.html')
 
-@app.route('/process_scribble', methods=['POST'])
-def process_scribble():
-    # Receive scribble data from the client
-    scribble_data = request.json
-
-    # Process the scribble data to generate a mathematical function
-    mathematical_function = generate_mathematical_function(scribble_data)
-
-    # Return the mathematical function to the client
-    return jsonify({'mathematical_function': mathematical_function})
+@app.route('/process_points', methods=['POST'])
+def process_points():
+    points = request.json['points']
+    
+    # Process the received points data
+    # Implement Fourier Transform or any other processing logic
+    
+    # Print the received points data
+    print("Received points:", points)
+    
+    # Send a response back to the client
+    return jsonify({'message': 'Points received and processed successfully'})
 
 def generate_mathematical_function(scribble_data):
     # Logic to convert sketch into a mathematical function
